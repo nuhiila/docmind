@@ -25,6 +25,9 @@ public class FileStorageService {
             throw new IllegalStateException("Cannot create storage directory", e);
         }
     }
+        public Path resolve(String storedName) {
+    return root.resolve(storedName);
+}
 
     public String store(MultipartFile file) {
         String storedName = UUID.randomUUID() + ".pdf";

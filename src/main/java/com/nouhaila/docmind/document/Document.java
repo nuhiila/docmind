@@ -50,4 +50,5 @@ public class Document {
     public DocumentStatus getStatus() { return status; }
     public Instant getUploadedAt() { return uploadedAt; }
     public User getOwner() { return owner; }
+    public void setStatus(DocumentStatus status) { this.status = status; }
 }
