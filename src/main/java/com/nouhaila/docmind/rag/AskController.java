@@ -18,7 +18,9 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/ask")
 public class AskController {
+
     private static final Logger log = LoggerFactory.getLogger(AskController.class);
+
     private final RagService ragService;
     private final UserRepository userRepository;
 
@@ -33,13 +35,9 @@ public class AskController {
         try {
             return ResponseEntity.ok(ragService.ask(request.question(), owner.getId()));
         } catch (RuntimeException e) {
-            Throwable root = e;
-            while (root.getCause() != null) {
-                root = root.getCause();
-            }
+            log.error("Ask failed", e);
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                    .body("DEBUG: " + e.getClass().getSimpleName() + " / "
-                            + root.getClass().getSimpleName() + ": " + root.getMessage());
+                    .body("The language model is unavailable. Please try again later.");
         }
     }
 }

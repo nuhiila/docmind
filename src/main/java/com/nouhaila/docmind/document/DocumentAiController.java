@@ -22,16 +22,16 @@ public class DocumentAiController {
 
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
-    private final DocumentProcessingService processingService;
+    private final DocumentQueue documentQueue;
     private final VectorStore vectorStore;
 
     public DocumentAiController(DocumentRepository documentRepository,
                                 UserRepository userRepository,
-                                DocumentProcessingService processingService,
+                                DocumentQueue documentQueue,
                                 VectorStore vectorStore) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
-        this.processingService = processingService;
+        this.documentQueue = documentQueue;
         this.vectorStore = vectorStore;
     }
 
@@ -43,15 +43,13 @@ public class DocumentAiController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Document not found");
         }
         Document document = found.get();
-        if (document.getStatus() != DocumentStatus.UPLOADED) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Document already processed");
+        if (document.getStatus() == DocumentStatus.READY || document.getStatus() == DocumentStatus.PROCESSING) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Document already processed or in progress");
         }
-        try {
-            int chunks = processingService.process(document);
-            return ResponseEntity.ok(Map.of("documentId", id, "chunks", chunks, "status", "READY"));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.unprocessableEntity().body(e.getMessage());
-        }
+        document.setStatus(DocumentStatus.UPLOADED);
+        documentRepository.save(document);
+        documentQueue.enqueue(document.getId());
+        return ResponseEntity.accepted().body(Map.of("documentId", id, "status", "QUEUED"));
     }
 
     @GetMapping("/search")

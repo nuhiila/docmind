@@ -18,13 +18,16 @@ public class DocumentController {
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
     private final FileStorageService storageService;
+    private final DocumentQueue documentQueue;
 
     public DocumentController(DocumentRepository documentRepository,
                               UserRepository userRepository,
-                              FileStorageService storageService) {
+                              FileStorageService storageService,
+                              DocumentQueue documentQueue) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
         this.storageService = storageService;
+        this.documentQueue = documentQueue;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -43,6 +46,7 @@ public class DocumentController {
 
         Document document = new Document(originalName, storedName, file.getSize(), owner);
         documentRepository.save(document);
+        documentQueue.enqueue(document.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(DocumentResponse.from(document));
     }

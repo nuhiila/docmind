@@ -10,5 +10,14 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  rabbitmq:
+    image: rabbitmq:4-management
+    environment:
+      RABBITMQ_DEFAULT_USER: docmind
+      RABBITMQ_DEFAULT_PASS: docmind
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
 volumes:
   pgdata:
