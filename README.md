@@ -188,6 +188,9 @@ src/main/java/com/nouhaila/docmind/
 ├── document/   upload, listing, queue producer/consumer, PDF processing, search
 ├── rag/        question answering (retrieval + language model)
 └── user/       user entity and repository
+
+<img width="937" height="407" alt="image" src="https://github.com/user-attachments/assets/b6e683ba-9436-4c7a-a4dc-7cd62c098ab8" />
+
 ```
 
 ## Troubleshooting (Windows)
