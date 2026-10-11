@@ -1,8 +1,10 @@
 # DocMind: AI document assistant (RAG)
 
+![CI](https://github.com/nuhiila/docmind/actions/workflows/ci.yml/badge.svg)
+
 Upload PDFs, then ask questions about them. DocMind answers **using only your documents** and cites the file and page of every source. If nothing relevant is found, it says so instead of inventing an answer.
 
-> **Status:** work in progress. The backend is complete and working. Automated tests, CI, a containerized app image and a React front-end are on the roadmap below.
+> **Status:** work in progress. The backend is complete and working, with unit tests and a CI pipeline. Integration tests, a containerized app image and a React front-end are on the roadmap below.
 
 ## What it does
 
@@ -63,6 +65,7 @@ sequenceDiagram
 | PDF parsing | Apache PDFBox |
 | Embeddings | Local ONNX model (all-MiniLM-L6-v2) via Spring AI |
 | Answer generation | Google Gemini via Spring AI |
+| Testing / CI | JUnit 5, Mockito, AssertJ, GitHub Actions |
 | Infrastructure | Docker Compose |
 
 ## Getting started
@@ -148,6 +151,21 @@ RabbitMQ management UI: http://localhost:15672 (development credentials `docmind
 | `spring.ai.google.genai.chat.model` | `application.properties` | Gemini model to use |
 | `app.rag.top-k` / `app.rag.min-score` | `application.properties` | Number of chunks retrieved and the minimum similarity score |
 
+## Tests
+
+```bash
+./mvnw test        # Windows: .\mvnw test
+```
+
+The unit tests need no database, broker or API key. They cover:
+
+- **Chunking:** overlap is exact, nothing is lost, edge cases (empty or short text) are handled
+- **JWT:** valid tokens are accepted; expired, tampered, forged and malformed tokens are rejected
+- **Queue listener:** a document is processed once; duplicates and missing documents are skipped (idempotency)
+- **Ingestion pipeline:** real generated PDFs are processed page by page with the metadata used for citations, and blank or invalid files end as `FAILED`
+
+GitHub Actions builds the project and runs the tests on every push and pull request. Integration tests against real PostgreSQL and RabbitMQ (Testcontainers) are planned.
+
 ## Design decisions and security
 
 - **Passwords:** hashed with BCrypt (slow and salted on purpose).
@@ -174,8 +192,9 @@ RabbitMQ management UI: http://localhost:15672 (development credentials `docmind
 - [x] Chunking, local embeddings, semantic search (pgvector)
 - [x] RAG question answering with citations
 - [x] Asynchronous processing (RabbitMQ + dead-letter queue)
-- [ ] Unit and integration tests (JUnit, Testcontainers)
-- [ ] CI pipeline (GitHub Actions)
+- [x] Unit tests (JUnit, Mockito)
+- [x] CI pipeline (GitHub Actions)
+- [ ] Integration tests (Testcontainers)
 - [ ] Dockerfile and full Docker Compose (app + database + broker)
 - [ ] React front-end (login, upload with statuses, chat with sources)
 
@@ -188,12 +207,28 @@ src/main/java/com/nouhaila/docmind/
 ├── document/   upload, listing, queue producer/consumer, PDF processing, search
 ├── rag/        question answering (retrieval + language model)
 └── user/       user entity and repository
+<<<<<<< HEAD
 
 <img width="937" height="407" alt="image" src="https://github.com/user-attachments/assets/b6e683ba-9436-4c7a-a4dc-7cd62c098ab8" />
 
+=======
+src/test/java/  unit tests (chunking, JWT, listener, ingestion)
+.github/workflows/ci.yml   CI pipeline
+>>>>>>> e7d52c5 (Update README with tests, CI badge and roadmap)
 ```
 
 ## Troubleshooting (Windows)
 
 - **`There is not enough space on the disk` / ONNX library errors at startup:** the embedding library extracts native files to your temp folder; free some disk space.
+<<<<<<< HEAD
 - **`onnxruntime.dll: A dynamic link library (DLL) initialization routine failed`:** an older C++ runtime bundled in the JDK's `bin` folder can shadow the system one. If `msvcp140.dll`, `vcruntime140.dll` and
+=======
+- **`onnxruntime.dll: A dynamic link library (DLL) initialization routine failed`:** an older C++ runtime bundled in the JDK's `bin` folder can shadow the system one. If `msvcp140.dll`, `vcruntime140.dll` and `vcruntime140_1.dll` in the JDK `bin` folder are older than the ones in `C:\Windows\System32`, rename them (for example to `.bak`).
+- **Port 8080 already in use:** stop the other application using it.
+- **`/api/ask` returns 503:** check the API key, the model name and your daily quota; the real error is in the application log.
+
+## Author
+
+Nouhaila Elkharfachi, Information Systems Engineering student.
+[LinkedIn](https://www.linkedin.com/in/nouhaila-el-kharfachi-07463a233) · [GitHub](https://github.com/nuhiila)
+>>>>>>> e7d52c5 (Update README with tests, CI badge and roadmap)
