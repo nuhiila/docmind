@@ -75,7 +75,14 @@ sequenceDiagram
 - JDK 21
 - Docker Desktop
 - A Gemini API key from [Google AI Studio](https://aistudio.google.com)
+### Run everything in Docker
 
+```bash
+export GEMINI_API_KEY="your-key"          # Windows PowerShell: $env:GEMINI_API_KEY = "your-key"
+docker compose --profile app up --build
+```
+
+This builds the application image and starts the app, PostgreSQL (pgvector) and RabbitMQ together. Without `--profile app`, only PostgreSQL and RabbitMQ start, which is convenient when running the application from your IDE.
 ### Run
 
 ```bash
