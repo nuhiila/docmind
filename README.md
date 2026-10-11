@@ -207,22 +207,13 @@ src/main/java/com/nouhaila/docmind/
 ├── document/   upload, listing, queue producer/consumer, PDF processing, search
 ├── rag/        question answering (retrieval + language model)
 └── user/       user entity and repository
-<<<<<<< HEAD
-
-<img width="937" height="407" alt="image" src="https://github.com/user-attachments/assets/b6e683ba-9436-4c7a-a4dc-7cd62c098ab8" />
-
-=======
 src/test/java/  unit tests (chunking, JWT, listener, ingestion)
 .github/workflows/ci.yml   CI pipeline
->>>>>>> e7d52c5 (Update README with tests, CI badge and roadmap)
 ```
 
 ## Troubleshooting (Windows)
 
 - **`There is not enough space on the disk` / ONNX library errors at startup:** the embedding library extracts native files to your temp folder; free some disk space.
-<<<<<<< HEAD
-- **`onnxruntime.dll: A dynamic link library (DLL) initialization routine failed`:** an older C++ runtime bundled in the JDK's `bin` folder can shadow the system one. If `msvcp140.dll`, `vcruntime140.dll` and
-=======
 - **`onnxruntime.dll: A dynamic link library (DLL) initialization routine failed`:** an older C++ runtime bundled in the JDK's `bin` folder can shadow the system one. If `msvcp140.dll`, `vcruntime140.dll` and `vcruntime140_1.dll` in the JDK `bin` folder are older than the ones in `C:\Windows\System32`, rename them (for example to `.bak`).
 - **Port 8080 already in use:** stop the other application using it.
 - **`/api/ask` returns 503:** check the API key, the model name and your daily quota; the real error is in the application log.
@@ -231,4 +222,3 @@ src/test/java/  unit tests (chunking, JWT, listener, ingestion)
 
 Nouhaila Elkharfachi, Information Systems Engineering student.
 [LinkedIn](https://www.linkedin.com/in/nouhaila-el-kharfachi-07463a233) · [GitHub](https://github.com/nuhiila)
->>>>>>> e7d52c5 (Update README with tests, CI badge and roadmap)
