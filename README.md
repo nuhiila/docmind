@@ -4,10 +4,12 @@
 
 Upload PDFs, then ask questions about them. DocMind answers **using only your documents** and cites the file and page of every source. If nothing relevant is found, it says so instead of inventing an answer.
 
-> **Status:** work in progress. The backend is complete and working, with unit tests and a CI pipeline. Integration tests, a containerized app image and a React front-end are on the roadmap below.
+> > **Status:** work in progress. The backend and a React front-end are complete and working, with unit tests, a CI pipeline and a Docker Compose setup. Integration tests are on the roadmap below.
 
 ## What it does
+![DocMind: documents with live status and chat with sources](docs/app.png)
 
+![Login screen](docs/login.png)
 - Secure accounts: registration, login, JWT-protected API
 - PDF upload that returns **instantly**; processing runs in the background
 - Semantic search over each user's documents (by meaning, not keywords)
@@ -18,8 +20,7 @@ Upload PDFs, then ask questions about them. DocMind answers **using only your do
 
 ```mermaid
 flowchart LR
-    C["Client<br/>(Postman / future React UI)"] -->|"HTTP + JWT"| API["Spring Boot API"]
-    API -->|"users, documents"| DB[("PostgreSQL + pgvector")]
+    C["React front-end<br/>(Vite) or any HTTP client"] -->|"HTTP + JWT"| API["Spring Boot API"]    API -->|"users, documents"| DB[("PostgreSQL + pgvector")]
     API -->|"document id"| Q[["RabbitMQ queue"]]
     Q --> L["Background listener"]
     L -->|"extract, chunk, embed"| DB
@@ -67,6 +68,8 @@ sequenceDiagram
 | Answer generation | Google Gemini via Spring AI |
 | Testing / CI | JUnit 5, Mockito, AssertJ, GitHub Actions |
 | Infrastructure | Docker Compose |
+| Front-end | React (Vite), fetch API, JWT in localStorage |
+
 
 ## Getting started
 
@@ -83,6 +86,16 @@ docker compose --profile app up --build
 ```
 
 This builds the application image and starts the app, PostgreSQL (pgvector) and RabbitMQ together. Without `--profile app`, only PostgreSQL and RabbitMQ start, which is convenient when running the application from your IDE.
+### Run the front-end (development)
+
+```bash
+cd frontend
+npm install
+npm run dev        # opens http://localhost:5173, proxies /api to localhost:8080
+```
+
+The app needs the backend on port 8080 (run it with Docker Compose or from Maven). Node 20.19+ is required.
+
 ### Run
 
 ```bash
@@ -191,6 +204,7 @@ GitHub Actions builds the project and runs the tests on every push and pull requ
 - Scanned PDFs (images without text) are not supported (no OCR).
 - The Gemini free tier has small daily quotas, and free-tier content may be used by Google to improve its products, so avoid sensitive documents.
 - The message is published right after the database save; a transactional outbox would make that fully reliable.
+- The front-end keeps the JWT in `localStorage` and polls for document status; an httpOnly cookie and server-sent events would be the next hardening steps.
 
 ## Roadmap
 
@@ -203,7 +217,7 @@ GitHub Actions builds the project and runs the tests on every push and pull requ
 - [x] CI pipeline (GitHub Actions)
 - [ ] Integration tests (Testcontainers)
 - [ ] Dockerfile and full Docker Compose (app + database + broker)
-- [ ] React front-end (login, upload with statuses, chat with sources)
+- [x] React front-end (login, upload with live statuses, chat with sources)
 
 ## Project structure
 
