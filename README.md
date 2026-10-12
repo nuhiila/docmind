@@ -10,6 +10,7 @@ Upload PDFs, then ask questions about them. DocMind answers **using only your do
 ![DocMind: documents with live status and chat with sources](docs/app.png)
 
 ![Login screen](docs/login.png)
+
 - Secure accounts: registration, login, JWT-protected API
 - PDF upload that returns **instantly**; processing runs in the background
 - Semantic search over each user's documents (by meaning, not keywords)
@@ -20,7 +21,8 @@ Upload PDFs, then ask questions about them. DocMind answers **using only your do
 
 ```mermaid
 flowchart LR
-    C["React front-end<br/>(Vite) or any HTTP client"] -->|"HTTP + JWT"| API["Spring Boot API"]    API -->|"users, documents"| DB[("PostgreSQL + pgvector")]
+    C["React front-end<br/>(Vite) or any HTTP client"] -->|"HTTP + JWT"| API["Spring Boot API"]
+    API -->|"users, documents"| DB[("PostgreSQL + pgvector")]
     API -->|"document id"| Q[["RabbitMQ queue"]]
     Q --> L["Background listener"]
     L -->|"extract, chunk, embed"| DB
